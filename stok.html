@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stok Bahan Ajar</title>
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 25px;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    th {
+      background: #4facfe;
+      color: white;
+      padding: 12px;
+    }
+
+    td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover {
+      background: #f1f7ff;
+      transition: 0.3s;
+    }
+
+    .form {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 10px;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #4facfe;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #00c6ff;
+      transform: scale(1.05);
+    }
+
+    .badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      color: white;
+      font-size: 12px;
+    }
+
+    .banyak { background: green; }
+    .sedikit { background: orange; }
+    .habis { background: red; }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>📦 Data Bahan Ajar</h2>
+
+  <table id="tabel">
+    <tr>
+      <th>Kode</th>
+      <th>Nama</th>
+      <th>Stok</th>
+    </tr>
+  </table>
+
+  <h3>➕ Tambah Data</h3>
+  <div class="form">
+    <input type="text" id="kode" placeholder="Kode Barang">
+    <input type="text" id="nama" placeholder="Nama Barang">
+    <input type="number" id="stok" placeholder="Jumlah Stok">
+    <button onclick="tambahData()">Tambah</button>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+
+<script>
+  const tabel = document.getElementById("tabel");
+
+  // LOAD DATA AWAL
+  dataBahanAjar.forEach(d => {
+    tambahBaris(d.kodeBarang, d.namaBarang, d.stok);
+  });
+
+  // FUNCTION TAMBAH BARIS
+  function tambahBaris(kode, nama, stok) {
+    let row = tabel.insertRow();
+
+    row.insertCell(0).innerText = kode;
+    row.insertCell(1).innerText = nama;
+
+    let status = "";
+    let kelas = "";
+
+    if (stok > 300) {
+      status = "Banyak";
+      kelas = "banyak";
+    } else if (stok > 0) {
+      status = "Sedikit";
+      kelas = "sedikit";
+    } else {
+      status = "Habis";
+      kelas = "habis";
+    }
+
+    row.insertCell(2).innerHTML =
+      `<span class="badge ${kelas}">${stok} (${status})</span>`;
+  }
+
+  // TAMBAH DATA BARU
+  function tambahData() {
+    let kode = document.getElementById("kode").value;
+    let nama = document.getElementById("nama").value;
+    let stok = document.getElementById("stok").value;
+
+    if (!kode || !nama || !stok) {
+      alert("Semua field harus diisi!");
+      return;
+    }
+
+    tambahBaris(kode, nama, stok);
+
+    // reset form
+    document.getElementById("kode").value = "";
+    document.getElementById("nama").value = "";
+    document.getElementById("stok").value = "";
+  }
+</script>
+
+</body>
+</html>

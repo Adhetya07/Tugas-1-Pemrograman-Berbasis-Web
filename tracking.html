@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tracking Pengiriman</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #667eea;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #5a67d8;
+      transform: scale(1.05);
+    }
+
+    .card {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .status {
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .timeline {
+      margin-top: 20px;
+      border-left: 3px solid #667eea;
+      padding-left: 15px;
+    }
+
+    .timeline-item {
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 5px;
+      width: 15px;
+      height: 15px;
+      background: #667eea;
+      border-radius: 50%;
+    }
+
+    .waktu {
+      font-size: 12px;
+      color: gray;
+    }
+
+    .not-found {
+      text-align: center;
+      color: red;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>🚚 Tracking Pengiriman</h2>
+
+  <div class="search-box">
+    <input type="text" id="resi" placeholder="Masukkan Nomor DO">
+    <button onclick="cariTracking()">Cari</button>
+  </div>
+
+  <div id="hasil"></div>
+</div>
+
+<script src="js/data.js"></script>
+
+<script>
+function cariTracking(){
+  let resi = document.getElementById("resi").value;
+  let data = dataTracking[resi];
+  let hasil = document.getElementById("hasil");
+
+  if(!data){
+    hasil.innerHTML = `<p class="not-found">❌ Data tidak ditemukan</p>`;
+    return;
+  }
+
+  let html = `
+    <div class="card">
+      <h3>${data.nama}</h3>
+      <p>Status: <span class="status">${data.status}</span></p>
+      <p>Ekspedisi: ${data.ekspedisi}</p>
+      <p>Tanggal Kirim: ${data.tanggalKirim}</p>
+      <p>Total: ${data.total}</p>
+    </div>
+
+    <div class="timeline">
+  `;
+
+  data.perjalanan.forEach(p => {
+    html += `
+      <div class="timeline-item">
+        <div class="waktu">${p.waktu}</div>
+        <div>${p.keterangan}</div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+
+  hasil.innerHTML = html;
+}
+</script>
+
+</body>
+</html>

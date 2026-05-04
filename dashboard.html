@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard SITTA</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+    }
+
+    .wrapper {
+      display: flex;
+    }
+
+    .sidebar {
+      width: 230px;
+      background: linear-gradient(180deg, #1e3c72, #2a5298);
+      color: white;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    .sidebar ul li {
+      margin: 10px 0;
+    }
+
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    .sidebar ul li a:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .submenu {
+      display: none;
+      padding-left: 15px;
+    }
+
+    .menu-laporan:hover .submenu {
+      display: block;
+    }
+
+    .main {
+      flex: 1;
+      padding: 25px;
+    }
+
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    .tracking-box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 30px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    table th {
+      background: #4facfe;
+      color: white;
+    }
+
+    .status-selesai { color: green; font-weight: bold; }
+    .status-proses { color: orange; font-weight: bold; }
+    .status-kirim { color: red; font-weight: bold; }
+
+  </style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>SITTA</h2>
+    <p>Sistem Bahan Ajar</p>
+
+    <ul>
+      <li><a href="#" onclick="showDashboard()">🏠 Dashboard</a></li>
+      <li><a href="stok.html">📚 Informasi Bahan Ajar</a></li>
+      <li><a href="tracking.html">🚚 Tracking</a></li>
+
+      <li class="menu-laporan">
+        <a href="#">📊 Laporan ▼</a>
+        <ul class="submenu">
+          <li><a href="#" onclick="showMonitoring()">Monitoring DO</a></li>
+          <li><a href="#" onclick="showRekap()">Rekap Bahan Ajar</a></li>
+        </ul>
+      </li>
+
+      <li><a href="#" onclick="showHistori()">🧾 Histori</a></li>
+
+      <li><a href="index.html">🚪 Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="mainContent">
+
+    <h1 id="greeting"></h1>
+    <p>Selamat datang di sistem pemesanan bahan ajar</p>
+
+    <div class="card-container">
+      <div class="card">
+        <h3>📚 Bahan Ajar</h3>
+        <a href="stok.html">Buka</a>
+      </div>
+
+      <div class="card">
+        <h3>🚚 Tracking</h3>
+        <a href="tracking.html">Buka</a>
+      </div>
+
+      <div class="card">
+        <h3>📊 Laporan</h3>
+        <a href="#" onclick="showMonitoring()">Buka</a>
+      </div>
+    </div>
+
+    <!-- TRACKING -->
+    <div class="tracking-box">
+      <h2>🚚 Tracking Delivery Order</h2>
+
+      <input type="text" id="resi" placeholder="Masukkan Nomor DO">
+      <button onclick="cariDO()">Cari</button>
+
+      <div id="hasilDO"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="js/data.js"></script>
+
+<script>
+function greeting() {
+  let jam = new Date().getHours();
+  let teks = jam < 12 ? "🌤️ Selamat Pagi" :
+             jam < 18 ? "☀️ Selamat Siang" :
+                        "🌙 Selamat Malam";
+  document.getElementById("greeting").innerText = teks;
+}
+greeting();
+
+function showDashboard(){
+  location.reload();
+}
+
+/* MONITORING */
+function showMonitoring(){
+  let html = "<h2>📊 Monitoring DO</h2><ul>";
+  for(let key in dataTracking){
+    let d = dataTracking[key];
+    html += `<li>${d.nomorDO} - ${d.nama} - ${d.status}</li>`;
+  }
+  html += "</ul>";
+  document.getElementById("mainContent").innerHTML = html;
+}
+
+/* REKAP */
+function showRekap(){
+
+  let totalStok = 0;
+  let totalJenis = dataBahanAjar.length;
+  let rekapLokasi = {};
+
+  dataBahanAjar.forEach(d => {
+    totalStok += d.stok;
+
+    if(!rekapLokasi[d.kodeLokasi]){
+      rekapLokasi[d.kodeLokasi] = 0;
+    }
+    rekapLokasi[d.kodeLokasi] += d.stok;
+  });
+
+  let html = `
+    <h2>📦 Rekap Bahan Ajar</h2>
+    <p><b>Total Stok:</b> ${totalStok}</p>
+    <p><b>Jumlah Jenis Buku:</b> ${totalJenis}</p>
+
+    <h3>📍 Stok per Lokasi</h3>
+    <ul>
+  `;
+
+  for(let lokasi in rekapLokasi){
+    html += `<li>${lokasi} : ${rekapLokasi[lokasi]}</li>`;
+  }
+
+  html += `
+    </ul>
+
+    <h3>📚 Detail Bahan Ajar</h3>
+    <table>
+      <tr>
+        <th>Kode</th>
+        <th>Nama</th>
+        <th>Lokasi</th>
+        <th>Stok</th>
+      </tr>
+  `;
+
+  dataBahanAjar.forEach(d => {
+    html += `
+      <tr>
+        <td>${d.kodeBarang}</td>
+        <td>${d.namaBarang}</td>
+        <td>${d.kodeLokasi}</td>
+        <td>${d.stok}</td>
+      </tr>
+    `;
+  });
+
+  html += `</table>`;
+  document.getElementById("mainContent").innerHTML = html;
+}
+
+/* HISTORI */
+function showHistori(){
+
+  let html = `
+    <h2>🧾 Histori Transaksi</h2>
+    <table>
+      <tr>
+        <th>No DO</th>
+        <th>Nama</th>
+        <th>Status</th>
+        <th>Ekspedisi</th>
+        <th>Total</th>
+      </tr>
+  `;
+
+  for(let key in dataTracking){
+    let d = dataTracking[key];
+
+    let statusClass = "status-proses";
+    if(d.status === "Selesai") statusClass = "status-selesai";
+    if(d.status === "Dikirim") statusClass = "status-kirim";
+
+    html += `
+      <tr>
+        <td>${d.nomorDO}</td>
+        <td>${d.nama}</td>
+        <td class="${statusClass}">${d.status}</td>
+        <td>${d.ekspedisi}</td>
+        <td>${d.total}</td>
+      </tr>
+    `;
+  }
+
+  html += `</table>`;
+  document.getElementById("mainContent").innerHTML = html;
+}
+
+/* TRACKING */
+function cariDO(){
+  let resi = document.getElementById("resi").value;
+  let data = dataTracking[resi];
+  let hasil = document.getElementById("hasilDO");
+
+  if(!data){
+    hasil.innerHTML = "<p style='color:red;'>Data tidak ditemukan</p>";
+    return;
+  }
+
+  let persen = 75;
+
+  hasil.innerHTML = `
+    <p><b>Nama:</b> ${data.nama}</p>
+    <p><b>Status:</b> ${data.status}</p>
+
+    <div style="background:#ddd; border-radius:10px;">
+      <div style="width:${persen}%; background:green; color:white; padding:5px;">
+        ${persen}%
+      </div>
+    </div>
+
+    <p><b>Ekspedisi:</b> ${data.ekspedisi}</p>
+    <p><b>Tanggal:</b> ${data.tanggalKirim}</p>
+    <p><b>Paket:</b> ${data.paket}</p>
+    <p><b>Total:</b> ${data.total}</p>
+  `;
+}
+</script>
+
+</body>
+</html>

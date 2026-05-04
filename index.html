@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login SITTA</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      animation: fadeIn 0.8s ease;
+    }
+
+    /* LOGO */
+    .logo {
+      width: 90px;
+      margin-bottom: 15px;
+      border-radius: 50%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: 0.3s;
+    }
+
+    .logo:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    h2 {
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: gray;
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #4facfe;
+      outline: none;
+      box-shadow: 0 0 5px rgba(79,172,254,0.5);
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #4facfe, #00c6ff);
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .link {
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .link a {
+      text-decoration: none;
+      color: #4facfe;
+    }
+
+    .link a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+
+  <!-- DATA -->
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- LOGO UT -->
+  <img src="assets/logo_ut.jpg" alt="Logo UT" class="logo">
+
+  <h2>📚 Login SITTA</h2>
+  <p class="subtitle">Universitas Terbuka</p>
+
+  <!-- INPUT -->
+  <input type="email" id="email" placeholder="Masukkan Email">
+  <input type="password" id="password" placeholder="Masukkan Password">
+
+  <button onclick="login()">Login</button>
+
+  <div class="link">
+    <a href="#" onclick="alert('Fitur lupa password')">Lupa Password</a> |
+    <a href="#" onclick="alert('Fitur daftar')">Daftar</a>
+  </div>
+
+</div>
+
+<script>
+function login() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!email || !password) {
+    alert("⚠️ Email dan Password wajib diisi!");
+    return;
+  }
+
+  const user = dataPengguna.find(u => 
+    u.email === email && u.password === password
+  );
+
+  if (user) {
+    alert("✅ Login berhasil, selamat datang " + user.nama);
+
+    localStorage.setItem("user", JSON.stringify(user));
+    window.location.href = "dashboard.html";
+  } else {
+    alert("❌ Email / Password salah!");
+  }
+}
+
+document.addEventListener("keypress", function(e){
+  if(e.key === "Enter"){
+    login();
+  }
+});
+</script>
+
+</body>
+</html>
